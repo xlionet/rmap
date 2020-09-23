@@ -18,7 +18,7 @@ func Test_Rmap(t *testing.T) {
 		}
 	}()
 
-	for i := 0; i < 10000000; i++ {
+	for i := 0; i < 100000000; i++ {
 		r.Set(i, i)
 	}
 	t.Log("down")
