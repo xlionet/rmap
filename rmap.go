@@ -2,7 +2,6 @@ package rmap
 
 import (
 	"sync"
-	// "sync/atomic"
 )
 
 type rmap struct {
@@ -43,9 +42,7 @@ func (r *RMap) Clean() {
 
 	oldIndex := r.curIndex
 
-	r.mu.Lock()
 	r.sw()
-	r.mu.Unlock()
 
 	for k := range r.buckets[oldIndex].m {
 		r.buckets[oldIndex].m[k] = 0
@@ -55,6 +52,7 @@ func (r *RMap) Clean() {
 
 // 切换找到一个可用的bucket,如果没有可用的，就创建一个
 func (r *RMap) sw() {
+	r.mu.Lock()
 	for i := int32(1); i < int32(len(r.buckets)); i++ {
 		index := (r.curIndex + i) % int32(len(r.buckets))
 
@@ -69,5 +67,6 @@ func (r *RMap) sw() {
 	r.buckets = append(r.buckets, bucket)
 
 	r.curIndex = int32(len(r.buckets) - 1)
+	r.mu.Unlock()
 
 }
